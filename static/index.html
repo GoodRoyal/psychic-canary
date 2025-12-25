@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychic Canary - Market Regime Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: 2px solid #f39c12;
+        }
+
+        button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .canary-status {
+            text-align: center;
+            padding: 50px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canary-status.exploitation {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .canary-status.exploration {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .canary-status.crisis_imminent {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(231, 76, 60, 0); }
+        }
+
+        .canary-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .phase-label {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .action-text {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .metric-value.warning {
+            color: #e74c3c;
+        }
+
+        .metric-value.safe {
+            color: #2ecc71;
+        }
+
+        .metric-value.caution {
+            color: #f39c12;
+        }
+
+        .weights-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .weights-title {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #f39c12;
+        }
+
+        .weight-bar {
+            margin-bottom: 15px;
+        }
+
+        .weight-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .weight-track {
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .weight-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #f39c12;
+            text-decoration: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #f39c12;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">&#x1F426;</div>
+            <h1>Psychic Canary</h1>
+            <p class="tagline">Thermodynamic Phase Inference for Market Regime Detection</p>
+            <div style="margin-top: 15px;">
+                <span class="tech-badge">Patent Pending</span>
+                <span class="tech-badge">TPIE Engine</span>
+                <span class="tech-badge">Real-Time Analysis</span>
+            </div>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <div class="field">
+                    <label>Tickers (comma-separated)</label>
+                    <input type="text" id="tickers" value="SPY, QQQ, AGG" placeholder="SPY, QQQ, AGG">
+                </div>
+                <div class="field" style="max-width: 150px;">
+                    <label>Lookback Days</label>
+                    <input type="number" id="days" value="252" min="30" max="756">
+                </div>
+                <button onclick="analyzeMarket()" id="analyzeBtn">Analyze Market</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing market thermodynamics...</p>
+        </div>
+
+        <div class="error" id="error">
+            <p>Failed to fetch data. Please check your tickers and try again.</p>
+        </div>
+
+        <div class="results" id="results">
+            <div class="canary-status" id="canaryStatus">
+                <div class="canary-icon" id="canaryIcon">&#x1F426;</div>
+                <div class="phase-label" id="phaseLabel">EXPLOITATION</div>
+                <div class="action-text" id="actionText">Market is stable</div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Temperature</div>
+                    <div class="metric-value" id="temperature">0.00</div>
+                    <small style="color: #666;">Volatility regime indicator</small>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Volatility Ratio</div>
+                    <div class="metric-value" id="volRatio">0.00</div>
+                    <small style="color: #666;">Recent vs Historical</small>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Free Energy</div>
+                    <div class="metric-value" id="freeEnergy">0.00</div>
+                    <small style="color: #666;">System stress level</small>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Entropy</div>
+                    <div class="metric-value" id="entropy">0.00</div>
+                    <small style="color: #666;">Portfolio diversification</small>
+                </div>
+            </div>
+
+            <div class="weights-section">
+                <div class="weights-title">Optimal Portfolio Weights</div>
+                <div id="weightsContainer"></div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Powered by <a href="#">Entropy Systems</a> | Patent Pending (Provisional 3a)</p>
+            <p style="margin-top: 10px;">Data: <span id="dataPoints">-</span> trading days analyzed</p>
+        </footer>
+    </div>
+
+    <script>
+        async function analyzeMarket() {
+            const tickersInput = document.getElementById('tickers').value;
+            const days = parseInt(document.getElementById('days').value);
+            const tickers = tickersInput.split(',').map(t => t.trim().toUpperCase());
+
+            // UI state
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('error').classList.remove('active');
+            document.getElementById('analyzeBtn').disabled = true;
+
+            try {
+                const response = await fetch('/infer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tickers, days })
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+
+                const data = await response.json();
+                displayResults(data);
+
+            } catch (err) {
+                document.getElementById('error').classList.add('active');
+                console.error(err);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            const canaryStatus = document.getElementById('canaryStatus');
+            const canaryIcon = document.getElementById('canaryIcon');
+            const phaseLabel = document.getElementById('phaseLabel');
+            const actionText = document.getElementById('actionText');
+
+            // Remove old classes
+            canaryStatus.classList.remove('exploitation', 'exploration', 'crisis_imminent');
+
+            // Set phase styling
+            canaryStatus.classList.add(data.phase);
+
+            if (data.phase === 'crisis_imminent') {
+                canaryIcon.textContent = '\u26A0\uFE0F';
+                phaseLabel.textContent = 'CRISIS IMMINENT';
+            } else if (data.phase === 'exploration') {
+                canaryIcon.textContent = '\u{1F426}';
+                phaseLabel.textContent = 'EXPLORATION';
+            } else {
+                canaryIcon.textContent = '\u{1F426}';
+                phaseLabel.textContent = 'EXPLOITATION';
+            }
+
+            actionText.textContent = data.suggested_action;
+
+            // Metrics
+            const tempEl = document.getElementById('temperature');
+            tempEl.textContent = data.temperature.toFixed(3);
+            tempEl.className = 'metric-value ' + (data.temperature > 0.3 ? 'warning' : data.temperature > 0.2 ? 'caution' : 'safe');
+
+            const volEl = document.getElementById('volRatio');
+            volEl.textContent = data.vol_ratio.toFixed(2) + 'x';
+            volEl.className = 'metric-value ' + (data.vol_ratio > 1.5 ? 'warning' : data.vol_ratio > 1.2 ? 'caution' : 'safe');
+
+            const feEl = document.getElementById('freeEnergy');
+            feEl.textContent = data.free_energy.toFixed(3);
+            feEl.className = 'metric-value ' + (data.free_energy < -0.5 ? 'warning' : 'safe');
+
+            document.getElementById('entropy').textContent = data.entropy.toFixed(3);
+            document.getElementById('dataPoints').textContent = data.data_points;
+
+            // Weights
+            const weightsContainer = document.getElementById('weightsContainer');
+            weightsContainer.innerHTML = '';
+
+            for (const [ticker, weight] of Object.entries(data.optimal_weights)) {
+                const pct = (weight * 100).toFixed(1);
+                weightsContainer.innerHTML += `
+                    <div class="weight-bar">
+                        <div class="weight-label">
+                            <span>${ticker}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="weight-track">
+                            <div class="weight-fill" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            results.classList.add('active');
+        }
+
+        // Auto-run on load
+        window.onload = () => analyzeMarket();
+    </script>
+</body>
+</html>
