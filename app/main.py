@@ -56,12 +56,10 @@ app.add_middleware(
 # Initialize engine
 engine = PsychicCanaryEngine(risk_aversion=1.0, vol_window=30, entropy_window=60)
 
-# Static files
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-
-# Mount static files for images
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Static files - use pathlib for reliable resolution
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
 
 # Request tracking
 request_count = {"total": 0, "success": 0, "errors": 0}
@@ -93,7 +91,7 @@ async def log_requests(request: Request, call_next):
 @app.get("/")
 def home():
     """Serve the demo frontend"""
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.get("/health")
@@ -203,13 +201,18 @@ def clear_cache(admin_key: str = None):
     return {"cleared": count}
 
 
+# ============== Static Files ==============
+# Mount after routes so routes take precedence
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
 # ============== Startup ==============
 
 @app.on_event("startup")
 async def startup():
     logger.info("=" * 50)
     logger.info("Psychic Canary API Starting")
-    logger.info(f"Static dir: {STATIC_DIR}")
+    logger.info(f"Static dir: {STATIC_DIR} (exists: {STATIC_DIR.exists()})")
     logger.info("=" * 50)
 
 
