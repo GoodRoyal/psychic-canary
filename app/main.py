@@ -60,6 +60,9 @@ engine = PsychicCanaryEngine(risk_aversion=1.0, vol_window=30, entropy_window=60
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
+# Mount static files for images
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 # Request tracking
 request_count = {"total": 0, "success": 0, "errors": 0}
 

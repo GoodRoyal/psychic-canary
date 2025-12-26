@@ -13,15 +13,34 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(180deg, #1a1512 0%, #2d2520 30%, #1a1512 100%);
             min-height: 100vh;
-            color: #e8e8e8;
+            color: #d4c4a8;
+            position: relative;
+        }
+
+        /* Mine texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(89, 73, 50, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(89, 73, 50, 0.1) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
+            position: relative;
+            z-index: 1;
         }
 
         header {
@@ -29,33 +48,90 @@
             margin-bottom: 50px;
         }
 
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 10px;
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .canary-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #d4a526;
+            box-shadow:
+                0 0 30px rgba(212, 165, 38, 0.4),
+                0 0 60px rgba(212, 165, 38, 0.2),
+                inset 0 0 20px rgba(0,0,0,0.3);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(212, 165, 38, 0.4), 0 0 60px rgba(212, 165, 38, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(212, 165, 38, 0.6), 0 0 80px rgba(212, 165, 38, 0.3); }
+        }
+
+        .lantern-light {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(ellipse, rgba(255, 200, 100, 0.15) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
+            font-size: 2.8rem;
+            font-weight: 400;
             margin-bottom: 10px;
-            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            background: linear-gradient(90deg, #f4d03f, #d4a526, #c9a227);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 40px rgba(212, 165, 38, 0.3);
+            letter-spacing: 2px;
         }
 
         .tagline {
-            color: #888;
+            color: #8b7355;
             font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .mine-quote {
+            margin-top: 15px;
+            color: #6b5a45;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        .tech-badges {
+            margin-top: 20px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(212, 165, 38, 0.15);
+            border: 1px solid rgba(212, 165, 38, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 5px;
+            color: #d4a526;
         }
 
         .input-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+            background: linear-gradient(145deg, rgba(45, 37, 32, 0.9), rgba(30, 25, 20, 0.95));
+            border-radius: 15px;
             padding: 30px;
             margin-bottom: 40px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(212, 165, 38, 0.2);
+            box-shadow:
+                0 10px 40px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
         .input-group {
@@ -73,39 +149,46 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #aaa;
+            color: #a89070;
             font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         input {
             width: 100%;
             padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            border: 1px solid rgba(212, 165, 38, 0.3);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #e8d8c8;
             font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input:focus {
-            outline: 2px solid #f39c12;
+            outline: none;
+            border-color: #d4a526;
+            box-shadow: 0 0 20px rgba(212, 165, 38, 0.2);
         }
 
         button {
             padding: 15px 40px;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #f39c12, #e74c3c);
-            color: white;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #d4a526, #b8922a);
+            color: #1a1512;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+            box-shadow: 0 10px 30px rgba(212, 165, 38, 0.4);
         }
 
         button:disabled {
@@ -130,99 +213,135 @@
 
         .canary-status {
             text-align: center;
-            padding: 50px;
-            border-radius: 20px;
+            padding: 40px;
+            border-radius: 15px;
             margin-bottom: 30px;
             position: relative;
             overflow: hidden;
+            border: 2px solid;
         }
 
         .canary-status.exploitation {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(145deg, rgba(39, 174, 96, 0.2), rgba(30, 100, 60, 0.3));
+            border-color: rgba(39, 174, 96, 0.5);
         }
 
         .canary-status.exploration {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: linear-gradient(145deg, rgba(212, 165, 38, 0.2), rgba(180, 130, 30, 0.3));
+            border-color: rgba(212, 165, 38, 0.5);
         }
 
         .canary-status.crisis_imminent {
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-            animation: pulse 1s infinite;
+            background: linear-gradient(145deg, rgba(192, 57, 43, 0.3), rgba(150, 40, 30, 0.4));
+            border-color: rgba(231, 76, 60, 0.6);
+            animation: danger-pulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
-            50% { box-shadow: 0 0 0 20px rgba(231, 76, 60, 0); }
+        @keyframes danger-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.3), inset 0 0 30px rgba(231, 76, 60, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(231, 76, 60, 0.5), inset 0 0 50px rgba(231, 76, 60, 0.2); }
         }
 
-        .canary-icon {
-            font-size: 5rem;
+        .status-canary {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
             margin-bottom: 20px;
+            border: 3px solid currentColor;
+        }
+
+        .canary-status.exploitation .status-canary {
+            border-color: #27ae60;
+            filter: drop-shadow(0 0 15px rgba(39, 174, 96, 0.5));
+        }
+
+        .canary-status.exploration .status-canary {
+            border-color: #d4a526;
+            filter: drop-shadow(0 0 15px rgba(212, 165, 38, 0.5));
+        }
+
+        .canary-status.crisis_imminent .status-canary {
+            border-color: #e74c3c;
+            filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.5)) grayscale(50%);
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
         }
 
         .phase-label {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
         }
 
+        .canary-status.exploitation .phase-label { color: #2ecc71; }
+        .canary-status.exploration .phase-label { color: #f4d03f; }
+        .canary-status.crisis_imminent .phase-label { color: #e74c3c; }
+
         .action-text {
-            margin-top: 15px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
+            color: #d4c4a8;
         }
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
         .metric-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            background: linear-gradient(145deg, rgba(45, 37, 32, 0.8), rgba(30, 25, 20, 0.9));
+            border-radius: 12px;
             padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(212, 165, 38, 0.15);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
 
         .metric-label {
-            color: #888;
-            font-size: 0.85rem;
+            color: #8b7355;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             margin-bottom: 10px;
         }
 
         .metric-value {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 600;
+            font-family: 'Courier New', monospace;
         }
 
-        .metric-value.warning {
-            color: #e74c3c;
-        }
+        .metric-value.warning { color: #e74c3c; }
+        .metric-value.safe { color: #2ecc71; }
+        .metric-value.caution { color: #f4d03f; }
 
-        .metric-value.safe {
-            color: #2ecc71;
-        }
-
-        .metric-value.caution {
-            color: #f39c12;
+        .metric-card small {
+            color: #6b5a45;
+            font-size: 0.75rem;
         }
 
         .weights-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            background: linear-gradient(145deg, rgba(45, 37, 32, 0.8), rgba(30, 25, 20, 0.9));
+            border-radius: 12px;
             padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(212, 165, 38, 0.15);
         }
 
         .weights-title {
             margin-bottom: 20px;
-            font-size: 1.2rem;
-            color: #f39c12;
+            font-size: 1.1rem;
+            color: #d4a526;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .weight-bar {
@@ -232,38 +351,38 @@
         .weight-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: #a89070;
+            font-size: 0.9rem;
         }
 
         .weight-track {
-            height: 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
+            height: 24px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
             overflow: hidden;
+            border: 1px solid rgba(212, 165, 38, 0.2);
         }
 
         .weight-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
-            border-radius: 15px;
+            background: linear-gradient(90deg, #d4a526, #f4d03f);
+            border-radius: 12px;
             transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(212, 165, 38, 0.3);
         }
 
         .footer {
             text-align: center;
             margin-top: 50px;
-            color: #666;
+            padding-top: 30px;
+            border-top: 1px solid rgba(212, 165, 38, 0.1);
+            color: #6b5a45;
             font-size: 0.9rem;
         }
 
         .footer a {
-            color: #f39c12;
+            color: #d4a526;
             text-decoration: none;
         }
 
@@ -280,8 +399,8 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #f39c12;
+            border: 3px solid rgba(212, 165, 38, 0.2);
+            border-top-color: #d4a526;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -291,36 +410,53 @@
             to { transform: rotate(360deg); }
         }
 
+        .loading p {
+            color: #a89070;
+            font-style: italic;
+        }
+
         .error {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid #e74c3c;
+            background: rgba(192, 57, 43, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.4);
             border-radius: 10px;
             padding: 20px;
             text-align: center;
             display: none;
+            color: #e74c3c;
         }
 
         .error.active {
             display: block;
         }
 
-        .tech-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.1);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin: 5px;
+        /* Mine shaft decorative elements */
+        .mine-beam {
+            position: fixed;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(89, 73, 50, 0.1), transparent);
+            top: 0;
+            z-index: 0;
         }
+
+        .mine-beam.left { left: 5%; }
+        .mine-beam.right { right: 5%; }
     </style>
 </head>
 <body>
+    <div class="mine-beam left"></div>
+    <div class="mine-beam right"></div>
+
     <div class="container">
         <header>
-            <div class="logo">&#x1F426;</div>
+            <div class="logo-container">
+                <div class="lantern-light"></div>
+                <img src="/static/canary.jpeg" alt="Psychic Canary" class="canary-image">
+            </div>
             <h1>Psychic Canary</h1>
             <p class="tagline">Thermodynamic Phase Inference for Market Regime Detection</p>
-            <div style="margin-top: 15px;">
+            <p class="mine-quote">"When the canary stops singing, leave the mine."</p>
+            <div class="tech-badges">
                 <span class="tech-badge">Patent Pending</span>
                 <span class="tech-badge">TPIE Engine</span>
                 <span class="tech-badge">Real-Time Analysis</span>
@@ -337,13 +473,13 @@
                     <label>Lookback Days</label>
                     <input type="number" id="days" value="252" min="30" max="756">
                 </div>
-                <button onclick="analyzeMarket()" id="analyzeBtn">Analyze Market</button>
+                <button onclick="analyzeMarket()" id="analyzeBtn">Descend Into Data</button>
             </div>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Analyzing market thermodynamics...</p>
+            <p>Listening to the canary...</p>
         </div>
 
         <div class="error" id="error">
@@ -352,7 +488,7 @@
 
         <div class="results" id="results">
             <div class="canary-status" id="canaryStatus">
-                <div class="canary-icon" id="canaryIcon">&#x1F426;</div>
+                <img src="/static/canary.jpeg" alt="Canary Status" class="status-canary" id="canaryIcon">
                 <div class="phase-label" id="phaseLabel">EXPLOITATION</div>
                 <div class="action-text" id="actionText">Market is stable</div>
             </div>
@@ -361,22 +497,22 @@
                 <div class="metric-card">
                     <div class="metric-label">Temperature</div>
                     <div class="metric-value" id="temperature">0.00</div>
-                    <small style="color: #666;">Volatility regime indicator</small>
+                    <small>Volatility regime indicator</small>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Volatility Ratio</div>
                     <div class="metric-value" id="volRatio">0.00</div>
-                    <small style="color: #666;">Recent vs Historical</small>
+                    <small>Recent vs Historical</small>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Free Energy</div>
                     <div class="metric-value" id="freeEnergy">0.00</div>
-                    <small style="color: #666;">System stress level</small>
+                    <small>System stress level</small>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Entropy</div>
                     <div class="metric-value" id="entropy">0.00</div>
-                    <small style="color: #666;">Portfolio diversification</small>
+                    <small>Portfolio diversification</small>
                 </div>
             </div>
 
@@ -398,7 +534,6 @@
             const days = parseInt(document.getElementById('days').value);
             const tickers = tickersInput.split(',').map(t => t.trim().toUpperCase());
 
-            // UI state
             document.getElementById('loading').classList.add('active');
             document.getElementById('results').classList.remove('active');
             document.getElementById('error').classList.remove('active');
@@ -428,30 +563,22 @@
         function displayResults(data) {
             const results = document.getElementById('results');
             const canaryStatus = document.getElementById('canaryStatus');
-            const canaryIcon = document.getElementById('canaryIcon');
             const phaseLabel = document.getElementById('phaseLabel');
             const actionText = document.getElementById('actionText');
 
-            // Remove old classes
             canaryStatus.classList.remove('exploitation', 'exploration', 'crisis_imminent');
-
-            // Set phase styling
             canaryStatus.classList.add(data.phase);
 
             if (data.phase === 'crisis_imminent') {
-                canaryIcon.textContent = '\u26A0\uFE0F';
-                phaseLabel.textContent = 'CRISIS IMMINENT';
+                phaseLabel.textContent = 'DANGER - EXIT THE MINE';
             } else if (data.phase === 'exploration') {
-                canaryIcon.textContent = '\u{1F426}';
-                phaseLabel.textContent = 'EXPLORATION';
+                phaseLabel.textContent = 'CAUTION - CANARY RESTLESS';
             } else {
-                canaryIcon.textContent = '\u{1F426}';
-                phaseLabel.textContent = 'EXPLOITATION';
+                phaseLabel.textContent = 'STABLE - CANARY SINGING';
             }
 
             actionText.textContent = data.suggested_action;
 
-            // Metrics
             const tempEl = document.getElementById('temperature');
             tempEl.textContent = data.temperature.toFixed(3);
             tempEl.className = 'metric-value ' + (data.temperature > 0.3 ? 'warning' : data.temperature > 0.2 ? 'caution' : 'safe');
@@ -467,7 +594,6 @@
             document.getElementById('entropy').textContent = data.entropy.toFixed(3);
             document.getElementById('dataPoints').textContent = data.data_points;
 
-            // Weights
             const weightsContainer = document.getElementById('weightsContainer');
             weightsContainer.innerHTML = '';
 
@@ -489,7 +615,6 @@
             results.classList.add('active');
         }
 
-        // Auto-run on load
         window.onload = () => analyzeMarket();
     </script>
 </body>
