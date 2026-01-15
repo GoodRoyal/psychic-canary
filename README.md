@@ -78,15 +78,6 @@ curl -X POST https://your-app.onrender.com/infer \
 - **Exploration**: Rising uncertainty, reduce leverage
 - **Crisis Imminent**: Phase transition, move to safety
 
-## Deploy to Render
-
-1. Push to GitHub
-2. Connect repo to Render
-3. Set environment variables:
-   - `POLYGON_API_KEY`: Your Polygon.io API key
-   - `ADMIN_API_KEY`: Secret key for admin operations
-4. Deploy
-
 ## Patent
 
 Derived from U.S. Provisional Patent Application 3a: "Thermodynamic Phase Inference Engine for Financial Market Regime Detection" (December 2025).
